@@ -16,6 +16,8 @@ const App = () => {
     const [token, setToken] = useState('')
     const [name, setName] = useState('')
     const [blogs, setBlogs] = useState([])
+    const [message, setMessage] = useState(null)
+    const [isError, setIsError] = useState(false)
 
     useEffect(() => {
         setToken(localStorage.getItem('token'))
@@ -24,19 +26,20 @@ const App = () => {
 
     const fetchBlogs = async () => {
         let blogs = await getAllBlogs()
-        console.log(blogs.data)
         setBlogs(blogs.data)
     }
 
-    const handleSubmit = async (event) => {
+    const handleLogin = async (event) => {
         event.preventDefault()
-        const response = await login({ username, password })
-        if (response.status === 200) {
+        try {
+            let response = await login({ username, password })
             localStorage.setItem('token', response.data.token)
             setToken(response.data.token)
             setName(response.data.username)
             setUsername('')
             setPassword('')
+        } catch (err) {
+            showMessage('wrong username or password', true)
         }
     }
 
@@ -46,9 +49,23 @@ const App = () => {
         setName('')
     }
 
-    const handleNewBlog = () => {
-        createBlog({ title, author, url }, token)
-        fetchBlogs()
+    const handleNewBlog = async (event) => {
+        event.preventDefault()
+        try {
+            let response = await createBlog({ title, author, url }, token)
+            showMessage(`a new blog: ${response.data.title} added!`)
+            fetchBlogs()
+        } catch (err) {
+            showMessage(err.message, true)
+        }
+    }
+
+    const showMessage = (message, isError = false) => {
+        setIsError(isError)
+        setMessage(message)
+        setTimeout(() => {
+            setMessage(null)
+        }, 5000)
     }
 
     if (token) return (
@@ -58,6 +75,8 @@ const App = () => {
                 {name} logged in
                 <button onClick={handleLogout}>logout</button>
             </h3>
+
+            <Notification message={message} isError={isError} />
 
             <h3>create new</h3>
 
@@ -86,7 +105,10 @@ const App = () => {
     return (
         <div>
             <h1>Log in to application</h1>
-            <form onSubmit={handleSubmit}>
+
+            <Notification message={message} isError={isError} />
+
+            <form onSubmit={handleLogin}>
                 <div>
                     username <input value={username} onChange={(e) => setUsername(e.target.value)} />
                 </div>
@@ -101,4 +123,14 @@ const App = () => {
         </div>
     )
 }
+
+const Notification = ({ message, isError }) => {
+    if (message === null) return null
+    return (
+        <div className={`${isError ? "error" : "message"} notification`} >
+            {message}
+        </div>
+    )
+}
+
 export default App

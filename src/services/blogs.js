@@ -3,7 +3,7 @@ const baseUrl = '/api/blogs'
 
 
 
-export const getAllBlogs = async () => {
+export const getAllBlogs = () => {
     return axios.get(baseUrl)
 }
 
