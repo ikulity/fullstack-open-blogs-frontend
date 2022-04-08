@@ -1,12 +1,17 @@
 import { useState, useEffect } from 'react'
 import Blog from './components/Blog'
-import blogService from './services/blogs'
-import loginService from './services/login'
+import { getAllBlogs, createBlog } from './services/blogs'
+import { login } from './services/login'
 
 const App = () => {
     // login form
     const [username, setUsername] = useState('')
     const [password, setPassword] = useState('')
+
+    // new blog form
+    const [title, setTitle] = useState('')
+    const [author, setAuthor] = useState('')
+    const [url, setUrl] = useState('')
 
     const [token, setToken] = useState('')
     const [name, setName] = useState('')
@@ -14,14 +19,18 @@ const App = () => {
 
     useEffect(() => {
         setToken(localStorage.getItem('token'))
-        blogService.getAll().then(blogs =>
-            setBlogs(blogs)
-        )
+        fetchBlogs()
     }, [])
+
+    const fetchBlogs = async () => {
+        let blogs = await getAllBlogs()
+        console.log(blogs.data)
+        setBlogs(blogs.data)
+    }
 
     const handleSubmit = async (event) => {
         event.preventDefault()
-        const response = await loginService.login({ username, password })
+        const response = await login({ username, password })
         if (response.status === 200) {
             localStorage.setItem('token', response.data.token)
             setToken(response.data.token)
@@ -37,30 +46,12 @@ const App = () => {
         setName('')
     }
 
-    const usernameChange = (event) => {
-        setUsername(event.target.value)
+    const handleNewBlog = () => {
+        createBlog({ title, author, url }, token)
+        fetchBlogs()
     }
 
-    const passwordChange = (event) => {
-        setPassword(event.target.value)
-    }
-
-    return (
-        <div>
-            {token ? <Blogs blogs={blogs} handleLogout={handleLogout} name={name} /> : <LoginForm
-                handleSubmit={handleSubmit}
-                username={username}
-                usernameChange={usernameChange}
-                password={password}
-                passwordChange={passwordChange} />
-            }
-        </div >
-    )
-
-}
-
-const Blogs = ({ blogs, handleLogout, name }) => {
-    return (
+    if (token) return (
         <div>
             <h1>blogs</h1>
             <h3>
@@ -68,6 +59,23 @@ const Blogs = ({ blogs, handleLogout, name }) => {
                 <button onClick={handleLogout}>logout</button>
             </h3>
 
+            <h3>create new</h3>
+
+            <form onSubmit={handleNewBlog}>
+                <div>
+                    title:<input value={title} onChange={(e) => setTitle(e.target.value)} />
+                </div>
+                <div>
+                    author:<input value={author} onChange={(e) => setAuthor(e.target.value)} />
+                </div>
+                <div>
+                    url:<input value={url} onChange={(e) => setUrl(e.target.value)} />
+                </div>
+                <div>
+                    <button type="submit">create</button>
+                </div>
+            </form>
+            <p></p>
             {
                 blogs.map(blog =>
                     <Blog key={blog.id} blog={blog} />
@@ -75,18 +83,15 @@ const Blogs = ({ blogs, handleLogout, name }) => {
             }
         </div>
     )
-}
-
-const LoginForm = ({ handleSubmit, username, usernameChange, password, passwordChange }) => {
     return (
         <div>
             <h1>Log in to application</h1>
             <form onSubmit={handleSubmit}>
                 <div>
-                    username <input value={username} onChange={usernameChange} />
+                    username <input value={username} onChange={(e) => setUsername(e.target.value)} />
                 </div>
                 <div>
-                    password <input value={password} onChange={passwordChange} />
+                    password <input value={password} onChange={(e) => setPassword(e.target.value)} />
                 </div>
                 <div>
                     <button type="submit">login</button>
@@ -96,5 +101,4 @@ const LoginForm = ({ handleSubmit, username, usernameChange, password, passwordC
         </div>
     )
 }
-
 export default App
