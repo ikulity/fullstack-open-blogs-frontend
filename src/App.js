@@ -13,6 +13,7 @@ const App = () => {
     const [blogs, setBlogs] = useState([])
 
     useEffect(() => {
+        setToken(localStorage.getItem('token'))
         blogService.getAll().then(blogs =>
             setBlogs(blogs)
         )
@@ -22,6 +23,7 @@ const App = () => {
         event.preventDefault()
         const response = await loginService.login({ username, password })
         if (response.status === 200) {
+            localStorage.setItem('token', response.data.token)
             setToken(response.data.token)
             setName(response.data.username)
             setUsername('')
@@ -30,6 +32,7 @@ const App = () => {
     }
 
     const handleLogout = () => {
+        localStorage.removeItem('token')
         setToken('')
         setName('')
     }
