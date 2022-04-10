@@ -1,5 +1,8 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Blog from './components/Blog'
+import BlogForm from './components/BlogForm'
+import Togglable from './components/Togglable'
+
 import { getAllBlogs, createBlog } from './services/blogs'
 import { login } from './services/login'
 
@@ -18,6 +21,8 @@ const App = () => {
     const [blogs, setBlogs] = useState([])
     const [message, setMessage] = useState(null)
     const [isError, setIsError] = useState(false)
+
+    const blogFormRef = useRef()
 
     useEffect(() => {
         setToken(localStorage.getItem('token'))
@@ -51,10 +56,14 @@ const App = () => {
 
     const handleNewBlog = async (event) => {
         event.preventDefault()
+        blogFormRef.current.toggleVisibility()
         try {
             let response = await createBlog({ title, author, url }, token)
             showMessage(`a new blog: ${response.data.title} added!`)
             fetchBlogs()
+            setTitle('')
+            setAuthor('')
+            setUrl('')
         } catch (err) {
             showMessage(err.message, true)
         }
@@ -77,23 +86,17 @@ const App = () => {
             </h3>
 
             <Notification message={message} isError={isError} />
+            <Togglable buttonLabel="new blog" ref={blogFormRef}>
+                <BlogForm
+                    handleNewBlog={handleNewBlog}
+                    title={title}
+                    setTitle={setTitle}
+                    author={author}
+                    setAuthor={setAuthor}
+                    url={url}
+                    setUrl={setUrl} />
+            </Togglable>
 
-            <h3>create new</h3>
-
-            <form onSubmit={handleNewBlog}>
-                <div>
-                    title:<input value={title} onChange={(e) => setTitle(e.target.value)} />
-                </div>
-                <div>
-                    author:<input value={author} onChange={(e) => setAuthor(e.target.value)} />
-                </div>
-                <div>
-                    url:<input value={url} onChange={(e) => setUrl(e.target.value)} />
-                </div>
-                <div>
-                    <button type="submit">create</button>
-                </div>
-            </form>
             <p></p>
             {
                 blogs.map(blog =>
