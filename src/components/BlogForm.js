@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types'
 
 const BlogForm = ({ handleNewBlog, title, setTitle, author, setAuthor, url, setUrl }) => {
     return (
@@ -20,6 +21,13 @@ const BlogForm = ({ handleNewBlog, title, setTitle, author, setAuthor, url, setU
             </form>
         </div>
     )
+}
+
+BlogForm.propTypes = {
+    handleNewBlog: PropTypes.func.isRequired,
+    title: PropTypes.string.isRequired,
+    author: PropTypes.string.isRequired,
+    url: PropTypes.string.isRequired
 }
 
 export default BlogForm
