@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { updateBlog } from '../services/blogs'
 
-const Blog = ({ blog }) => {
+const Blog = ({ blog, handleRemove, username }) => {
     const [showDetails, setShowDetails] = useState(false)
     const [isLiked, setIsLiked] = useState(false)
 
@@ -22,7 +22,6 @@ const Blog = ({ blog }) => {
         } catch (err) {
             console.log(err)
         }
-
     }
 
     if (showDetails) return (
@@ -31,6 +30,7 @@ const Blog = ({ blog }) => {
             <p>{blog.url}</p>
             <p>likes {blog.likes} {!isLiked ? <button onClick={() => handleLike()}>like</button> : <></>} </p>
             <p>{blog.user.name}</p>
+            {username === blog.user.username ? <button onClick={() => handleRemove(blog.id)}>remove</button> : <></>}
         </div>
 
     )

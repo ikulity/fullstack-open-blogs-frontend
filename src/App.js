@@ -3,7 +3,7 @@ import Blog from './components/Blog'
 import BlogForm from './components/BlogForm'
 import Togglable from './components/Togglable'
 
-import { getAllBlogs, createBlog } from './services/blogs'
+import { getAllBlogs, createBlog, removeBlog } from './services/blogs'
 import { login } from './services/login'
 
 const App = () => {
@@ -19,6 +19,7 @@ const App = () => {
     const [token, setToken] = useState('')
     const [name, setName] = useState('')
     const [blogs, setBlogs] = useState([])
+
     const [message, setMessage] = useState(null)
     const [isError, setIsError] = useState(false)
 
@@ -26,6 +27,7 @@ const App = () => {
 
     useEffect(() => {
         setToken(localStorage.getItem('token'))
+        setName(localStorage.getItem('blogUsername'))
         fetchBlogs()
     }, [])
 
@@ -38,7 +40,9 @@ const App = () => {
         event.preventDefault()
         try {
             let response = await login({ username, password })
+            console.log(response.data)
             localStorage.setItem('token', response.data.token)
+            localStorage.setItem('blogUsername', response.data.username)
             setToken(response.data.token)
             setName(response.data.username)
             setUsername('')
@@ -50,6 +54,7 @@ const App = () => {
 
     const handleLogout = () => {
         localStorage.removeItem('token')
+        localStorage.removeItem('blogUsername')
         setToken('')
         setName('')
     }
@@ -66,6 +71,19 @@ const App = () => {
             setUrl('')
         } catch (err) {
             showMessage(err.message, true)
+        }
+    }
+
+    const handleRemove = async (id) => {
+        try {
+            const blog = blogs.find((obj) => obj.id === id)
+            if (window.confirm(`Remove blog: "${blog.title}" by ${blog.author} ?`)) {
+                await removeBlog(id)
+                let filteredBlogs = blogs.filter((blog) => blog.id !== id)
+                setBlogs(filteredBlogs)
+            }
+        } catch (err) {
+            console.log(err)
         }
     }
 
@@ -108,7 +126,7 @@ const App = () => {
                 blogs
                     .sort(compareLikes)
                     .map(blog =>
-                        <Blog key={blog.id} blog={blog} />
+                        <Blog key={blog.id} blog={blog} handleRemove={handleRemove} username={name} />
                     )
             }
         </div>
