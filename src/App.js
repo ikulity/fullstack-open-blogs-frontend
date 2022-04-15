@@ -77,6 +77,12 @@ const App = () => {
         }, 5000)
     }
 
+    const compareLikes = (a, b) => {
+        if (a.likes < b.likes) return 1
+        if (a.likes > b.likes) return -1
+        if (a.likes === b.likes) return 0
+    }
+
     if (token) return (
         <div>
             <h1>blogs</h1>
@@ -99,9 +105,11 @@ const App = () => {
 
             <p></p>
             {
-                blogs.map(blog =>
-                    <Blog key={blog.id} blog={blog} />
-                )
+                blogs
+                    .sort(compareLikes)
+                    .map(blog =>
+                        <Blog key={blog.id} blog={blog} />
+                    )
             }
         </div>
     )
