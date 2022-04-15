@@ -58,7 +58,7 @@ const App = () => {
         event.preventDefault()
         blogFormRef.current.toggleVisibility()
         try {
-            let response = await createBlog({ title, author, url }, token)
+            let response = await createBlog({ title, author, url })
             showMessage(`a new blog: ${response.data.title} added!`)
             fetchBlogs()
             setTitle('')
