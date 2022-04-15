@@ -156,7 +156,7 @@ const App = () => {
 const Notification = ({ message, isError }) => {
     if (message === null) return null
     return (
-        <div className={`${isError ? "error" : "message"} notification`} >
+        <div className={`${isError ? 'error' : 'message'} notification`} >
             {message}
         </div>
     )

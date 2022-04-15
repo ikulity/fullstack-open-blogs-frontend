@@ -3,7 +3,7 @@ import axios from 'axios'
 const baseUrl = '/api/blogs'
 
 const getConfig = () => {
-    console.log("token: ", localStorage.getItem('token'))
+    console.log('token: ', localStorage.getItem('token'))
     return { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } }
 }
 
