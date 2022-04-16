@@ -26,9 +26,9 @@ const Blog = ({ blog, handleRemove, username }) => {
 
     if (showDetails) return (
         <div style={blogStyle}>
-            {blog.title} - {blog.author} <button onClick={() => setShowDetails(false)}>hide</button>
-            <p>{blog.url}</p>
-            <p>likes {blog.likes} {!isLiked ? <button onClick={() => handleLike()}>like</button> : <></>} </p>
+            {blog.title} - {blog.author} <button onClick={() => setShowDetails(false)} id='detailsButton'>hide</button>
+            <p id='url'>{blog.url}</p>
+            <p id='likes'>likes {blog.likes} {!isLiked ? <button onClick={() => handleLike()} id='likeButton'>like</button> : <></>} </p>
             <p>{blog.user.name}</p>
             {username === blog.user.username ? <button onClick={() => handleRemove(blog.id)}>remove</button> : <></>}
         </div>
@@ -36,7 +36,7 @@ const Blog = ({ blog, handleRemove, username }) => {
     )
     return (
         <div style={blogStyle}>
-            {blog.title} - {blog.author} <button onClick={() => setShowDetails(true)}>view</button>
+            {blog.title} - {blog.author} <button onClick={() => setShowDetails(true)} id='detailsButton'>view</button>
         </div>
     )
 }
