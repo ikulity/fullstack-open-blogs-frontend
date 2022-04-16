@@ -11,11 +11,6 @@ const App = () => {
     const [username, setUsername] = useState('')
     const [password, setPassword] = useState('')
 
-    // new blog form
-    const [title, setTitle] = useState('')
-    const [author, setAuthor] = useState('')
-    const [url, setUrl] = useState('')
-
     const [token, setToken] = useState('')
     const [name, setName] = useState('')
     const [blogs, setBlogs] = useState([])
@@ -59,16 +54,13 @@ const App = () => {
         setName('')
     }
 
-    const handleNewBlog = async (event) => {
-        event.preventDefault()
-        blogFormRef.current.toggleVisibility()
+    const handleNewBlog = async (blog) => {
         try {
-            let response = await createBlog({ title, author, url })
+            let response = await createBlog(blog)
+            blogFormRef.current.toggleVisibility()
             showMessage(`a new blog: ${response.data.title} added!`)
             fetchBlogs()
-            setTitle('')
-            setAuthor('')
-            setUrl('')
+
         } catch (err) {
             showMessage(err.message, true)
         }
@@ -119,14 +111,7 @@ const App = () => {
 
             <Notification message={message} isError={isError} />
             <Togglable buttonLabel="new blog" ref={blogFormRef}>
-                <BlogForm
-                    handleNewBlog={handleNewBlog}
-                    title={title}
-                    setTitle={setTitle}
-                    author={author}
-                    setAuthor={setAuthor}
-                    url={url}
-                    setUrl={setUrl} />
+                <BlogForm handleNewBlog={handleNewBlog} />
             </Togglable>
 
             <p></p>
