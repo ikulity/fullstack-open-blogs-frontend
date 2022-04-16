@@ -3,7 +3,7 @@ import Blog from './components/Blog'
 import BlogForm from './components/BlogForm'
 import Togglable from './components/Togglable'
 
-import { getAllBlogs, createBlog, removeBlog } from './services/blogs'
+import { getAllBlogs, createBlog, updateBlog, removeBlog } from './services/blogs'
 import { login } from './services/login'
 
 const App = () => {
@@ -74,6 +74,14 @@ const App = () => {
         }
     }
 
+    const handleLike = async (blog) => {
+        try {
+            await updateBlog(blog)
+        } catch (err) {
+            console.log(err)
+        }
+    }
+
     const handleRemove = async (id) => {
         try {
             const blog = blogs.find((obj) => obj.id === id)
@@ -126,7 +134,7 @@ const App = () => {
                 blogs
                     .sort(compareLikes)
                     .map(blog =>
-                        <Blog key={blog.id} blog={blog} handleRemove={handleRemove} username={name} />
+                        <Blog key={blog.id} blog={blog} handleRemove={handleRemove} handleLike={handleLike} username={name} />
                     )
             }
         </div>

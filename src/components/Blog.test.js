@@ -15,37 +15,57 @@ const blog = {
     }
 }
 
-test('renders default content', () => {
-    const { container } = render(<Blog blog={blog} />)
+describe('<Blog/>', () => {
+    test('renders default content', () => {
+        const { container } = render(<Blog blog={blog} />)
 
-    const detailsButton = container.querySelector('#detailsButton')
-    expect(detailsButton).toHaveTextContent('view')
+        const detailsButton = container.querySelector('#detailsButton')
+        expect(detailsButton).toHaveTextContent('view')
 
-    const likeButton = container.querySelector('#likeButton')
-    expect(likeButton).toBeNull()
+        const likeButton = container.querySelector('#likeButton')
+        expect(likeButton).toBeNull()
 
-    const urlElement = container.querySelector('#url')
-    expect(urlElement).toBeNull()
+        const urlElement = container.querySelector('#url')
+        expect(urlElement).toBeNull()
 
-    const likesElement = container.querySelector('#likes')
-    expect(likesElement).toBeNull()
+        const likesElement = container.querySelector('#likes')
+        expect(likesElement).toBeNull()
+    })
+
+    test('renders detailed content when pressing view button', () => {
+        const { container } = render(<Blog blog={blog} />)
+
+        const button = screen.getByText('view')
+        userEvent.click(button)
+
+        const detailsButton = container.querySelector('#detailsButton')
+        expect(detailsButton).toHaveTextContent('hide')
+
+        const likeButton = container.querySelector('#likeButton')
+        expect(likeButton).toHaveTextContent('like')
+
+        const urlElement = container.querySelector('#url')
+        expect(urlElement).toHaveTextContent(blog.url)
+
+        const likesElement = container.querySelector('#likes')
+        expect(likesElement).toHaveTextContent(`likes ${blog.likes}`)
+    })
+
+    test('clicking like twice calls like handler function only once', () => {
+        const addLike = jest.fn()
+        render(<Blog blog={blog} handleLike={addLike} />)
+
+        const viewButton = screen.getByText('view')
+        userEvent.click(viewButton)
+
+
+        const likeButton = screen.getByText('like')
+        // click twice
+        userEvent.click(likeButton)
+        userEvent.click(likeButton)
+
+        screen.debug()
+        expect(addLike.mock.calls).toHaveLength(1)
+    })
 })
 
-test('renders detailed content when pressing view button', () => {
-    const { container } = render(<Blog blog={blog} />)
-
-    const button = screen.getByText('view')
-    userEvent.click(button)
-
-    const detailsButton = container.querySelector('#detailsButton')
-    expect(detailsButton).toHaveTextContent('hide')
-
-    const likeButton = container.querySelector('#likeButton')
-    expect(likeButton).toHaveTextContent('like')
-
-    const urlElement = container.querySelector('#url')
-    expect(urlElement).toHaveTextContent(blog.url)
-
-    const likesElement = container.querySelector('#likes')
-    expect(likesElement).toHaveTextContent(`likes ${blog.likes}`)
-})
