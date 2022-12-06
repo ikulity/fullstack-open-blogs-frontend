@@ -31,4 +31,21 @@ describe('Blog app', () => {
             cy.get('.error').should('have.css', 'color', 'rgb(255, 0, 0)')
         })
     })
+
+    describe('When logged in', () => {
+        beforeEach(() => {
+            cy.login({ username: 'ikulity', password: 'secret' })
+        })
+
+        it('a blog can be created', () => {
+            cy.contains('new blog').click()
+            cy.get('#title-input').type('a blog created by cypress')
+            cy.get('#author-input').type('cypress')
+            cy.get('#url-input').type('cypress.com')
+
+            cy.get('#create-button').click()
+            cy.contains('a blog created by cypress')
+            cy.contains('view')
+        })
+    })
 })
