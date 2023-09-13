@@ -81,5 +81,20 @@ describe('Blog app', () => {
             cy.contains('view').click()
             cy.contains('remove').should('not.exist')
         })
+
+        it.only('blogs are sorted by amount of likes', () => {
+            cy.createBlog({ title: 'blog with the second most likes', author: 'cypress', url: 'cypress.com' })
+            cy.createBlog({ title: 'blog with the most likes', author: 'cypress', url: 'cypress.com' })
+
+            cy.get('.blog').first().should('contain', 'blog with the second most likes')
+
+            cy.contains('blog with the most likes').find('button').as('theButton')
+            cy.get('@theButton').click()
+            cy.contains('likes 0').find('button').click()
+
+            cy.wait(200) // wait for the likes amount to update
+
+            cy.get('.blog').first().should('contain', 'blog with the most likes')
+        })
     })
 })

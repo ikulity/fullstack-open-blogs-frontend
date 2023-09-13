@@ -42,6 +42,7 @@ const App = () => {
             setName(response.data.username)
             setUsername('')
             setPassword('')
+            fetchBlogs()
         } catch (err) {
             showMessage('wrong username or password', true)
         }
@@ -69,6 +70,7 @@ const App = () => {
     const handleLike = async (blog) => {
         try {
             await updateBlog(blog)
+            fetchBlogs()
         } catch (err) {
             console.log(err)
         }
@@ -115,13 +117,17 @@ const App = () => {
             </Togglable>
 
             <p></p>
-            {
-                blogs
-                    .sort(compareLikes)
-                    .map(blog =>
-                        <Blog key={blog.id} blog={blog} handleRemove={handleRemove} handleLike={handleLike} username={name} />
-                    )
-            }
+
+            <div className="blogs">
+                {
+                    blogs
+                        .sort(compareLikes)
+                        .map(blog =>
+                            <Blog key={blog.id} blog={blog} handleRemove={handleRemove} handleLike={handleLike} username={name} />
+                        )
+                }
+            </div>
+
         </div>
     )
     return (
