@@ -1,9 +1,11 @@
 describe('Blog app', () => {
+    const user = { name: 'iippa', username: 'ikulity', password: 'secret' }
+    const testUser = { name: 'test_user', username: 'test_user', password: 'password' }
     beforeEach(() => {
         cy.request('POST', 'localhost:3003/api/testing/reset')
 
-        const user = { name: 'iippa', username: 'ikulity', password: 'secret' }
         cy.request('POST', 'localhost:3003/api/users', user)
+        cy.request('POST', 'localhost:3003/api/users', testUser)
 
         cy.visit('localhost:3000')
     })
@@ -34,7 +36,7 @@ describe('Blog app', () => {
 
     describe('When logged in', () => {
         beforeEach(() => {
-            cy.login({ username: 'ikulity', password: 'secret' })
+            cy.login(user)
         })
 
         it('a blog can be created', () => {
@@ -61,6 +63,22 @@ describe('Blog app', () => {
             cy.contains('view').click()
             cy.contains('cypress.com')
             cy.contains('remove').click()
+            cy.contains('remove').should('not.exist')
+        })
+
+        it('only the blog creator can see the delete button', () => {
+            cy.createBlog({ title: 'title', author: 'cypress', url: 'cypress.com' })
+            cy.contains('view').click()
+            cy.contains('cypress.com')
+
+            cy.contains('logout').click()
+
+            cy.get('#username').type(testUser.name)
+            cy.get('#password').type(testUser.password)
+            cy.contains('login').click()
+
+            cy.contains('test_user logged in')
+            cy.contains('view').click()
             cy.contains('remove').should('not.exist')
         })
     })
